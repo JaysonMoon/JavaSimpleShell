@@ -1,77 +1,61 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SimpleShell {
 
     public static void main(String[] args) throws java.io.IOException{
 
         String commandLine;
-        BufferedReader console = new BufferedReader
-                (new InputStreamReader(System.in));
+        BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 
         ProcessBuilder pb = new ProcessBuilder();
         List<String> history = new ArrayList<String>();
         int index = 0;
-        //we break out with <ctrl c>
+        //break with ctrl+c
         while(true){
-            //read what the user enters
-            System.out.print("jsh>");
+            //read user entry
+            System.out.print("jsh>"); //removed "ln" written in assignment so input will be inline with jsh>
             commandLine = console.readLine();
 
-            //input parsed into array of strings(commands)
-            String[] commands = commandLine.split(" ");
+            //user input will be split and placed into string array
+            String[] commands = commandLine.split(" "); //split input at spaces
             List<String> list = new ArrayList<String>();
 
-
-            //loop through to see if parsing worked
+            //put the inputs we split into "commands" into list "list"
             for(int i = 0;i<commands.length;i++){
-                //System.out.println(commands[i]); ***check to see if parsing/split worked***
                 list.add(commands[i]);
-
             }
-            //System.out.print(list); ***check to see if list was added correctly***
+
             history.addAll(list);
             try{
-                //display history of shell with index
+                //if the user typed "history"
                 if(list.get(list.size()-1).equals("history")){
-                    for(String s : history)
-                        System.out.println((index++) + " " + s);
+                    for(String s : history) //for every element in history
+                        System.out.println((index++) + " " + s); //print number in history plus value at history[index]
                     continue;
                 }
 
-                //change directory
-
                 if(list.contains("cd")){
-                    if(list.get(list.size()-1).equals("cd")){
+                    if(list.get(list.size()-1).equals("cd")){ //if the last element in list is cd
                         File home = new File(System.getProperty("user.home"));
-                        //test to see what user.home changes to
-                        //System.out.println("The home directory is " + home);
-                        pb.directory(home);
+                        pb.directory(home); //pb.directory returns working directory, we pass in "home"
                         continue;
 
                     }else{
-                        String dir = list.get(1);
-                        //test to see what directory was passed
-                        //System.out.println("The directory passed is " + dir);
-                        File newPath = new File(dir);
-                        boolean exists = newPath.exists();
+                        String directory = list.get(1);
+                        File newDirectory = new File(directory);
+                        boolean exists = newDirectory.exists();
 
                         if(exists){
-                            System.out.println("/" + dir); //added the "/" for cleaner output
-                            pb.directory(newPath);
+                            System.out.println("/" + directory); //added the "/" for cleaner output
+                            pb.directory(newDirectory);
                             continue;
                         }
-                        else{   		//if directory doesn't exist
+                        else{   //if directory doesn't exist
                             System.out.print("Path ");
                         }
                     }
                 }
-                //Testing to see if home directory works
-//			File home = new File(System.getProperty("user.home"));
-//			pb.directory(home);
-
-
 
                 //!! command returns the last command in history
                 if(list.get(list.size()-1).equals("!!")){
